@@ -1,37 +1,58 @@
 package anazri.fixme;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Random;
-import anazri.fixme.*;
+import java.io.*;
+import java.net.*;
+import java.awt.*;
+import java.awt.event;
+import java.awt.event.ActionEvent;
 
-public class server {
+import javax.swing.*;
+
+public class server extends JFrame{
     public static void main(String[] args) throws IOException{
 
-        //step 1: connect to port 5000
-        ServerSocket serverSocket = new ServerSocket(5000);
-        Socket socket = serverSocket.accept();
+        private JTextField userText;
+        private JTextArea chatWindow;
+        private ObjectOutputStream output;
+        private ObjectInputStream input;
+        private ServerSocket serverSocket;
+        private Socket socket = serverSocket.accept();
     
-        //Step 2: broker establishes connection
-        System.out.println("\n>> User connected successfully.");
-        serverSocket.close();
-
-        InputStreamReader input = new InputStreamReader(socket.getInputStream());
-        BufferedReader breader = new BufferedReader(input);
-
-        String str = breader.readLine();
-        System.out.println(">> Client: " + str + "\n");
-
-        //Step 3: Router asigns new connection a unique 6 digit ID and communicates it to the Broker
-        String ID = generateID(6);
-        System.out.println(">> " + ID + ": " + "\n");
+        //constructor
+        public server(){
+            super("Fix Messenger");
+            userText = new JTextField();
+            userText.setEditable(false); //By default before being connected you aren't allowed to type in IM box
+            userText.addActionListener(
+                new ActionListener(){
+                    public void actionPerformed(ActionEvent event){
+                        sendMessage(event.getActionCommand());
+                        userText.setText("");
+                    }
+                }
+            ); 
+            add(userText, BorderLayout.NORTH);
+            chatWindow = new JTextArea();
+            add(new JScrollPane(chatWindow));
+            setSize(400, 200);
+            setVisible(true);
+        }
+        //set up and run server
+        public void startRunning(){
+            try{
+                serverSocket = new ServerSocket(5000, 100); //100 = backlog for num of people waiting in port 5000 to chat
+                while(true){
+                    try{
+                        waitForConnection();
+                    }catch(EOFException eofException){
+                        //EOF = end of connection
+                        showMessage("\nServer connection ended.")
+                    }finally{
+                        closeAll();
+                    }
+                }
+            }catch(IOException ioException){
+                ioexception.printStackTrace();
+            }
+        }  
     }
-
-    private static String generateID(int i) {
-        return generateID(i);
-    }
-}
