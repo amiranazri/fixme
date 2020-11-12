@@ -7,13 +7,12 @@
         <groupId>za.co.breadgang</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>broker</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>router</artifactId>
     <packaging>jar</packaging>
 
-
-     <build>
+    <build>
         <plugins>
             <plugin>
                 <!-- Build an executable JAR -->
@@ -25,7 +24,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>broker.Broker</mainClass>
+                            <mainClass>router.Router</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -44,7 +43,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>broker.Broker</mainClass>
+                            <mainClass>router.Router</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -52,9 +51,20 @@
                     </descriptorRefs>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
-<dependencies>
+
+    <dependencies>
     <dependency>
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
@@ -62,4 +72,5 @@
     </dependency>
 
     </dependencies>
+
 </project>
