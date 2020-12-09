@@ -65,8 +65,8 @@ public class Broker
       }
       public static void material()
       {
-            System.out.println("Please enter a number: [1]Platinum, [2]Gold, [3]Silver, [4]Copper, [5]Iron, [6]Steel");
-            while(true)
+            System.out.println("Select metal to purchase:\n");
+            System.out.println("[0]Platinum\n" + "[1]Gold\n" + "[2]Silver\n" + "[3]Copper\n" + "[4]Iron\n" + "[5]Steel\n");            while(true)
             {
                   index = scanner.nextInt();
                   if (index <= 5 && index >= 0)
