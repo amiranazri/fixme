@@ -65,7 +65,7 @@ public class Broker
       }
       public static void material()
       {
-            System.out.println("Select metal to purchase.");
+            System.out.println("Please enter a number: [1]Platinum, [2]Gold, [3]Silver, [4]Copper, [5]Iron, [6]Steel");
             while(true)
             {
                   index = scanner.nextInt();
