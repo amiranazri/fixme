@@ -29,7 +29,7 @@ public class Router
             public void run() {
                 try {
                     marketSocket = new ServerSocket(5000);
-                    System.out.println("Broker is trying to connect to port 5000, please wait.");
+                    System.out.println("Awaiting broker connection to port 5000, please wait.");
                     while (true) {
                         marketClientSocket = marketSocket.accept();
                         clientProcessingPool.submit(new ClientTask(marketClientSocket , brokerClientSocket));
@@ -47,7 +47,7 @@ public class Router
             public void run() {
                 try {
                     brokerSocket = new ServerSocket(5001);
-                    System.out.println("Market is trying to connect to port 5001, please wait.");
+                    System.out.println("Awaiting market connection to port 5001, please wait.");
                     while (true) {
                         brokerClientSocket = brokerSocket.accept();
                         clientProcessingPool.submit(new ClientTask1(marketClientSocket , brokerClientSocket));

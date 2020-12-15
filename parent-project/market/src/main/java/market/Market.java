@@ -70,38 +70,24 @@ public class Market
         int quantity = 0;
         int price = 0;
         int index = 0;
-        int i = 0;
         String[] arr = str.split("\\|");
-        for (int x = 0; x < arr.length; x++)
-        {
-            if (x == 7)
-            {
-                brokerOption = Integer.parseInt(arr[x].split("=")[1]);
-            }
-            if (x == 9)
-            {
-                quantity = Integer.parseInt(arr[x].split("=")[1]);
-            }
-            if (x == 11)
-            {
-                
-                price = Integer.parseInt(arr[x].split("=")[1]);
-            }
-            if (x == 12)
-            {
-                
-                index = Integer.parseInt(arr[x].split("=")[1]);
-            }
+
+        if (arr.length > 13) {
+            brokerOption = Integer.parseInt(arr[7].split("=")[1]);
+            quantity = Integer.parseInt(arr[9].split("=")[1]);
+            price = Integer.parseInt(arr[11].split("=")[1]);
+            index = Integer.parseInt(arr[12].split("=")[1]);
         }
-        if (brokerOption == 1)
+        if (brokerOption == 1 || !(index < inventory.length)) // the ! is to allow index out of bounds through this part 
+                                                                //so it can be rejected without wasting code
         {
-            if (quantity <= inventory[index])
+            if (index < inventory.length && quantity <= inventory[index]) //index out of bounds rejected here
             {
                 inventory[index] -= quantity;
                 try {
 
                 PrintWriter printWriter = new PrintWriter(checkSocket.getOutputStream());
-                String userName = "Type=Exeuted|"+str+"";
+                String userName = "Type=Executed|"+str+"";
                 printWriter.println(userName);
                 printWriter.flush();
                 } catch (IOException exception) {
@@ -113,11 +99,10 @@ public class Market
             else
             {
                 try {
-
-                PrintWriter printWriter = new PrintWriter(checkSocket.getOutputStream());
-                String userName = "Type=Rejected|"+str+"";
-                printWriter.println(userName);
-                printWriter.flush();
+                    PrintWriter printWriter = new PrintWriter(checkSocket.getOutputStream());
+                    String userName = "Type=Rejected|"+str+"";
+                    printWriter.println(userName);
+                    printWriter.flush();
                 } catch (IOException exception) {
                     System.err.println("Unable to process client request");
                     exception.printStackTrace();
@@ -130,7 +115,7 @@ public class Market
             try {
 
                 PrintWriter printWriter = new PrintWriter(checkSocket.getOutputStream());
-                String userName = "Type=Exeuted|"+str+"";
+                String userName = "Type=Executed|"+str+"";
                 printWriter.println(userName);
                 printWriter.flush();
                 } catch (IOException exception) {
@@ -139,6 +124,5 @@ public class Market
                 }
             System.out.println(inventory[index]);
         }
-        
     }
 }

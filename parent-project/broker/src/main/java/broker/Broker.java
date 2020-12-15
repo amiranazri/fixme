@@ -1,7 +1,8 @@
 package broker;
 
 import java.io.*; 
-import java.net.*; 
+import java.net.*;
+import java.util.InputMismatchException;
 import java.util.Scanner; 
 import java.time.ZonedDateTime;
 import java.time.ZoneOffset;
@@ -10,7 +11,7 @@ import java.util.concurrent.*;
 public class Broker 
 {
     public static String[] metals = {"Platinum", "Gold", "Silver", "Copper", "Iron", "Steel"};
-	public static final int[] inventory = {1, 1, 1, 1, 1, 1};
+	public static int[] inventory = {10, 10, 10, 10, 10, 10};
 	public static int brokerOption;
 	public static String material;
 	public static int index;
@@ -51,15 +52,24 @@ public class Broker
       public static void brokerOption()
       {
             System.out.println("Please enter [1] for BUY, and [2] for SELL.");
+            String notInt;
             while(true)
-            {
-                  brokerOption = scanner.nextInt();
-                  if (brokerOption == 1)
-                        break;
-                  else if (brokerOption == 2)
-                        break;
-                  else
-                        System.out.println("BUY[1] OR SELL[2]");
+            {     try {
+                        brokerOption = scanner.nextInt();
+                        if (brokerOption == 1 || brokerOption == 2)
+                              break;
+                        else
+                              System.out.println("BUY[1] OR SELL[2]");
+                  }
+                  catch(InputMismatchException e) {
+                        notInt = scanner.next();
+                        if (notInt.toLowerCase().equals("buy")) {
+                              brokerOption = 1; break; }
+                        else if (notInt.toLowerCase().equals("sell")) {
+                              brokerOption = 2; break; }
+                        else
+                              System.out.println("BUY[1] OR SELL[2]");
+                  }
             }
             System.out.println(brokerOption);
       }
@@ -73,7 +83,7 @@ public class Broker
                         break;
                   else
                         System.out.println("Select metal to purchase:\n");
-                        System.out.println("\n[1]Platinum\n" + "[2]Gold\n" + "[3]Silver\n" + "[4]Copper\n" + "[5]Iron\n" + "[6]Steel\n");
+                        System.out.println("\n[0]Platinum\n" + "[1]Gold\n" + "[2]Silver\n" + "[3]Copper\n" + "[4]Iron\n" + "[5]Steel\n");
             }
             material = metals[index];
             System.out.println(material);
@@ -81,25 +91,30 @@ public class Broker
       public static void Quantity()
       {
             if (brokerOption == 2)
-                  System.out.println("Select Quantity To Sell [ 1 - "+inventory[index]+"]");
+                  System.out.println("Select Quantity To Sell [ Stocked: "+inventory[index]+"]");
             else
                   System.out.println("Select Quantity To Buy");
             while(true)
             {
-                  quantity = scanner.nextInt();
-                  if (brokerOption == 2)
-                  {
-                        if (quantity > 0 && quantity <= inventory[index])
-                              break;
+                  try {
+                        quantity = scanner.nextInt();
+                        if (brokerOption == 2)
+                        {
+                              if (quantity >= 0 && quantity <= inventory[index])
+                                    break;
+                              else
+                                    System.out.println("Select Quantity To Sell [ Stocked: "+ inventory[index] + "]");
+                        }
                         else
-                              System.out.println("Select Quantity To Sell [ 1 - "+ inventory[index] + " ]");
-                  }
-                  else
-                  {
-                        if (quantity > 0 && quantity <= 10000)
-                              break;
-                        else
-                              System.out.println("Please enter item quantity for purchase.");
+                        {
+                              if (quantity > 0 && quantity <= 10000)
+                                    break;
+                              else
+                                    System.out.println("Please enter item quantity for purchase.");
+                        }
+                  } catch (InputMismatchException e) {
+                        System.out.println("Please enter numbers only.");
+                        scanner.next();
                   }
             }
       }
@@ -143,53 +158,24 @@ public class Broker
                   exception.printStackTrace();
             }
       }
-      public static int stringCompare(String str1, String str2) 
-      { 
-            int length1 = str1.length(); 
-            int length2 = str2.length(); 
-            int minLength = Math.min(length1, length2); 
-            for (int i = 0; i < minLength; i++)
-            { 
-                  int charStr1 = (int)str1.charAt(i); 
-                  int charStr2 = (int)str2.charAt(i); 
-                  if (charStr1 != charStr2) { 
-                        return charStr1 - charStr2; 
-                  }  
-                  if (length1 != length2) { 
-                        return length1 - length2; 
-                  } 
-                  else
-                  { 
-                        return 0; 
-                  } 
-            }
-            return 0;
-      }
+
       public static void Receiving(String str)
       {
             String[] arr = str.split("\\|");
-            for (int a = 0; a < arr.length; a++)
+            if  (13 < arr.length)
             {
-                  if (a == 0)
-                        type = arr[a].split("=")[1];
-                  if (a == 8)
-                        brokerOption = Integer.parseInt(arr[a].split("=")[1]);
-                  if (a == 10)
-                        quantity = Integer.parseInt(arr[a].split("=")[1]);
-                  if (a == 12)
-                        biddingPrice = Integer.parseInt(arr[a].split("=")[1]);
-                  if (a == 13)
-                        index = Integer.parseInt(arr[a].split("=")[1]);
-            }
-            if (stringCompare(type, "Exeuted") == 0)
-            {
-                  if (brokerOption == 1)
+                        type = arr[0].split("=")[1];
+                        brokerOption = Integer.parseInt(arr[8].split("=")[1]);
+                        quantity = Integer.parseInt(arr[10].split("=")[1]);
+                        biddingPrice = Integer.parseInt(arr[12].split("=")[1]);
+                        index = Integer.parseInt(arr[13].split("=")[1]);
+                  if (type.equals("Executed"))
                   {
-                        inventory[index] += quantity;
-                  }
-                  else if (brokerOption == 2)
-                  {
-                        inventory[index] -= quantity;
+                        System.out.println("Reflecting execution");
+                        if (brokerOption == 1)
+                              inventory[index] += quantity;
+                        else if (brokerOption == 2)
+                              inventory[index] -= quantity;
                   }
             }
 
